@@ -8,6 +8,8 @@ Page web statique de génération de leads vendeurs pour Julien Sabatier (consei
 - `style.css` : tout le style, palette bleue BSK dans les variables `:root`
 - `script.js` : logique du formulaire, calcul local de l'estimation, envoi vers le webhook Make (Web3Forms en secours)
 - `README.md` : mise en ligne et test
+- `ebook/ebook.html` : source de l'e-book « 10 conseils pour vendre votre maison » (8 pages A4)
+- `ebook/10-conseils-vendre-sa-maison-BSK.pdf` : PDF généré depuis `ebook.html`, envoyé par lien aux prospects
 
 Aucune dépendance, aucun build. Un simple serveur statique suffit (`python3 -m http.server 8000`).
 
@@ -21,7 +23,9 @@ Aucune dépendance, aucun build. Un simple serveur statique suffit (`python3 -m 
 
 ## Configuration
 
-- Webhook Make : constante `MAKE_WEBHOOK_URL` en haut de `script.js`. Scénario Make « BSK Estimateur en ligne => Mail + Brevo » (équipe My Team) : filtre anti-robot (champ `botcheck` vide), mail Outlook à j.sabatier@bskimmobilier.com, puis création ou mise à jour du contact Brevo dans la liste BSK (id 2).
+- Webhook Make : constante `MAKE_WEBHOOK_URL` en haut de `script.js`. Scénario Make « BSK Estimateur en ligne => Mail + Brevo » (équipe My Team) : filtre anti-robot (champ `botcheck` vide), mail Outlook à j.sabatier@bskimmobilier.com, puis un aiguillage en deux branches : mail au prospect avec le lien de l'e-book (si email renseigné, envoyé depuis j.sabatier@bskimmobilier.com) et création ou mise à jour du contact Brevo dans la liste BSK (id 2).
+- Lien de l'e-book dans le mail prospect : https://juliensabatier.github.io/estimationbsk/ebook/10-conseils-vendre-sa-maison-BSK.pdf. Renommer ou déplacer le PDF casse ce lien : mettre à jour le module « Mail au prospect + e-book » dans Make en même temps.
+- Régénérer le PDF après modification de `ebook.html` : impression Chromium en A4 avec arrière-plans (Playwright `page.pdf({ format: 'A4', printBackground: true, preferCSSPageSize: true })`). Polices utilisées : Inter et Caladea, avec repli sur DejaVu.
 - Envoi vers Make : formulaire encodé en `mode: "no-cors"` pour éviter le pré-vol CORS. La réponse est opaque : seule une panne réseau déclenche le secours Web3Forms. Une erreur côté Make (scénario désactivé, file pleine) ne déclenche pas le secours, elle se voit dans l'historique Make.
 - Attributs Brevo alimentés : FIRSTNAME, LASTNAME, SMS (mobile) ou LANDLINE_NUMBER (fixe), SOURCE (BSK, ou META si `utm_source` Facebook/Instagram ou `fbclid` dans l'URL), VILLE_BIEN, TYPE_BIEN, SURFACE, TERRAIN, ANNEE_CONSTRUCTION, ETAT_BIEN, NB_PIECES, NB_CHAMBRES, NB_SDB, CHAUFFAGE, DPE, GARAGE, EXPOSITION, ENVIRONNEMENT, POINTS_FORTS, PROJET_VENTE, ESTIMATION_MIN, ESTIMATION_MAX, DATE_DEMANDE_ESTIMATION. Brevo exige un email ou un mobile : sans les deux, seule la notification mail part (elle le signale).
 - Clé Web3Forms (secours) : constante `WEB3FORMS_ACCESS_KEY` en haut de `script.js`. Cette clé est publique par conception, elle est liée à l'adresse mail de travail utilisée à la création du compte Web3Forms (j.sabatier@bskimmobilier.com).
@@ -41,3 +45,4 @@ Aucune dépendance, aucun build. Un simple serveur statique suffit (`python3 -m 
 - Mention RGPD et politique de confidentialité : à ajouter avant la campagne Meta si Julien le souhaite (lien dans la note de consentement).
 - Envoi SMS : non implémenté. Nécessiterait un service payant et un petit serveur intermédiaire.
 - Pixel Meta et suivi de conversion : non installés.
+- Logo BSK : l'e-book et le mail prospect utilisent un logo texte (« BSK » dans un carré bleu). À remplacer par le logo officiel si Julien fournit le fichier.

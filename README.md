@@ -18,6 +18,7 @@ Puis ouvrir http://localhost:8000
    - aucune fenêtre de messagerie (Outlook, Mail, Gmail) ne s'ouvre ;
    - le résultat s'affiche en moins de 3 secondes ;
    - le mail « Nouvelle demande d'estimation » arrive sur j.sabatier@bskimmobilier.com ;
+   - si un email a été saisi, le prospect reçoit « votre estimation et votre guide offert » avec le bouton de téléchargement de l'e-book ;
    - le contact apparaît dans Brevo, liste BSK, avec les champs du bien remplis (il faut un email ou un numéro de mobile).
 4. Si rien n'arrive, ouvrir l'historique du scénario « BSK Estimateur en ligne => Mail + Brevo » dans Make. Si la console du navigateur (F12) affiche « Webhook Make injoignable », le récapitulatif est parti en secours par Web3Forms.
 
