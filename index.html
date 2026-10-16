@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Estimation gratuite | Julien Sabatier, BSK Immobilier</title>
+<meta name="description" content="Estimation gratuite de votre bien dans le Pays Mélusin (Rouillé, Lusignan, Saint-Sauvant). 14 ans d'expérience locale.">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- LOADING OVERLAY -->
+<div class="loading-overlay" id="loading">
+  <div class="loading-ring"></div>
+  <div class="loading-text">Analyse en cours…</div>
+  <div class="loading-steps">
+    <div class="loading-step" id="ls1">Analyse des données du marché local</div>
+    <div class="loading-step" id="ls2">Comparaison avec les ventes récentes</div>
+    <div class="loading-step" id="ls3">Calcul de la fourchette de prix</div>
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-texture"></div>
+  <nav class="nav">
+    <div class="logo">
+      <div class="logo-name">Julien Sabatier</div>
+      <div class="logo-sub">BSK Immobilier · Pays Mélusin</div>
+    </div>
+    <div class="nav-badge">Estimation gratuite</div>
+  </nav>
+  <div class="hero-content">
+    <div class="hero-eyebrow">Outil d'estimation</div>
+    <h1 class="hero-title">
+      Découvrez la valeur<br>
+      <em>réelle</em> de votre bien
+    </h1>
+    <p class="hero-desc">
+      Une estimation basée sur le marché actuel du Pays Mélusin et les ventes récentes de votre secteur. Gratuit, sans engagement, en 2 minutes.
+    </p>
+    <div class="scroll-cta" id="start-cta">
+      <div class="scroll-arrow">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+          <path d="M6 2v8M2 8l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      Commencer l'estimation
+    </div>
+  </div>
+  <div class="hero-stats">
+    <div class="stat">
+      <div class="stat-num">14 ans</div>
+      <div class="stat-label">d'expérience locale</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">Pays Mélusin</div>
+      <div class="stat-label">secteur couvert</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">100%</div>
+      <div class="stat-label">gratuit et sans engagement</div>
+    </div>
+  </div>
+</section>
+
+<!-- FORM SECTION -->
+<section class="form-section" id="form-section">
+  <div class="form-container">
+    <div class="section-header">
+      <span class="section-tag">Votre estimation</span>
+      <h2 class="section-title">Renseignez votre <em>bien immobilier</em></h2>
+    </div>
+
+    <div class="steps-indicator">
+      <div class="step-dot active" id="dot-1"><span>1</span></div>
+      <div class="step-line" id="line-1"></div>
+      <div class="step-dot" id="dot-2"><span>2</span></div>
+      <div class="step-line" id="line-2"></div>
+      <div class="step-dot" id="dot-3"><span>3</span></div>
+    </div>
+
+    <div class="error-msg" id="error-msg">Veuillez remplir tous les champs obligatoires.</div>
+
+    <!-- ETAPE 1 : type et localisation -->
+    <div class="form-step active" id="step-1">
+      <div class="step-title">Votre bien</div>
+      <p class="step-desc">Quel type de bien souhaitez-vous estimer ?</p>
+
+      <div class="type-grid">
+        <div class="type-card selected" data-type="Maison">
+          <div class="type-icon">🏡</div>
+          <div class="type-label">Maison</div>
+        </div>
+        <div class="type-card" data-type="Appartement">
+          <div class="type-icon">🏢</div>
+          <div class="type-label">Appartement</div>
+        </div>
+        <div class="type-card" data-type="Terrain">
+          <div class="type-icon">🌿</div>
+          <div class="type-label">Terrain</div>
+        </div>
+        <div class="type-card" data-type="Corps de ferme">
+          <div class="type-icon">🏚️</div>
+          <div class="type-label">Corps de ferme</div>
+        </div>
+        <div class="type-card" data-type="Longère">
+          <div class="type-icon">🧱</div>
+          <div class="type-label">Longère / Grange</div>
+        </div>
+        <div class="type-card" data-type="Autre">
+          <div class="type-icon">🏠</div>
+          <div class="type-label">Autre</div>
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="field">
+          <label for="commune">Commune <span class="required">*</span></label>
+          <select id="commune">
+            <option value="">Sélectionnez</option>
+            <option>Rouillé</option>
+            <option>Lusignan</option>
+            <option>Saint-Sauvant</option>
+            <option>Couhé</option>
+            <option>Benassay</option>
+            <option>Chaunay</option>
+            <option>Savigné</option>
+            <option>Curzay-sur-Vonne</option>
+            <option>Sanxay</option>
+            <option>Ménigoute</option>
+            <option>Autre commune du secteur</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="surface">Surface habitable (m²) <span class="required">*</span></label>
+          <input type="number" id="surface" placeholder="ex: 120" min="10" max="1000">
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="field">
+          <label for="terrain">Terrain (m²)</label>
+          <input type="number" id="terrain" placeholder="ex: 800">
+          <span class="field-note">Laisser vide si pas de terrain</span>
+        </div>
+        <div class="field">
+          <label for="annee">Année de construction</label>
+          <input type="number" id="annee" placeholder="ex: 1985" min="1800" max="2026">
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button type="button" class="btn-next" data-next="1">Suivant →</button>
+      </div>
+    </div>
+
+    <!-- ETAPE 2 : caracteristiques -->
+    <div class="form-step" id="step-2">
+      <div class="step-title">Caractéristiques</div>
+      <p class="step-desc">Décrivez l'état et les équipements de votre bien.</p>
+
+      <div class="field" style="margin-bottom:1.2rem;">
+        <label>État général du bien <span class="required">*</span></label>
+      </div>
+      <div class="etat-grid">
+        <div class="etat-card" data-etat="À rénover entièrement">À rénover</div>
+        <div class="etat-card" data-etat="Travaux à prévoir">Travaux à prévoir</div>
+        <div class="etat-card" data-etat="Bon état général">Bon état</div>
+        <div class="etat-card" data-etat="Très bon état / récent">Très bon état</div>
+      </div>
+
+      <div class="form-grid">
+        <div class="field">
+          <label for="pieces">Nombre de pièces <span class="required">*</span></label>
+          <select id="pieces">
+            <option value="">Sélectionnez</option>
+            <option>1 pièce (studio)</option>
+            <option>2 pièces</option>
+            <option>3 pièces</option>
+            <option>4 pièces</option>
+            <option>5 pièces</option>
+            <option>6 pièces</option>
+            <option>7 pièces et +</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="chambres">Nombre de chambres</label>
+          <select id="chambres">
+            <option value="">Sélectionnez</option>
+            <option>1 chambre</option>
+            <option>2 chambres</option>
+            <option>3 chambres</option>
+            <option>4 chambres</option>
+            <option>5 chambres et +</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="field">
+          <label for="sdb">Salle(s) de bain / d'eau</label>
+          <select id="sdb">
+            <option value="">Sélectionnez</option>
+            <option>1</option>
+            <option>2</option>
+            <option>3 et +</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="chauffage">Type de chauffage</label>
+          <select id="chauffage">
+            <option value="">Non précisé</option>
+            <option>Électrique</option>
+            <option>Gaz de ville</option>
+            <option>Fioul</option>
+            <option>Bois / Poêle</option>
+            <option>Pompe à chaleur</option>
+            <option>Géothermie</option>
+            <option>Autre</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="field">
+          <label for="dpe">DPE (diagnostic énergétique)</label>
+          <select id="dpe">
+            <option value="">Non connu / Non réalisé</option>
+            <option>A (très performant)</option>
+            <option>B</option>
+            <option>C</option>
+            <option>D</option>
+            <option>E</option>
+            <option>F (passoire thermique)</option>
+            <option>G (passoire thermique)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="garage">Garage / parking</label>
+          <select id="garage">
+            <option value="Non">Non</option>
+            <option value="1 garage">1 garage</option>
+            <option value="2 garages">2 garages</option>
+            <option value="Parking extérieur">Parking extérieur</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="field">
+          <label for="exposition">Exposition</label>
+          <select id="exposition">
+            <option value="">Non précisée</option>
+            <option>Sud</option>
+            <option>Sud-Est</option>
+            <option>Sud-Ouest</option>
+            <option>Est</option>
+            <option>Ouest</option>
+            <option>Nord</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="environnement">Environnement</label>
+          <select id="environnement">
+            <option value="">Non précisé</option>
+            <option>Centre-bourg</option>
+            <option>Lotissement calme</option>
+            <option>Campagne isolée</option>
+            <option>Proche axe passant</option>
+            <option>Vue dégagée</option>
+          </select>
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <div class="form-grid single">
+        <div class="field">
+          <label for="points_forts">Points forts / particularités de votre bien</label>
+          <textarea id="points_forts" placeholder="Ex: piscine, dépendances, cuisine récente, proche gare, calme absolu…"></textarea>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button type="button" class="btn-prev" data-prev="2">← Retour</button>
+        <button type="button" class="btn-next" data-next="2">Suivant →</button>
+      </div>
+    </div>
+
+    <!-- ETAPE 3 : contact -->
+    <div class="form-step" id="step-3">
+      <div class="step-title">Vos coordonnées</div>
+      <p class="step-desc">Pour recevoir votre estimation détaillée et être recontacté par Julien.</p>
+
+      <div class="form-grid">
+        <div class="field">
+          <label for="prenom">Prénom <span class="required">*</span></label>
+          <input type="text" id="prenom" placeholder="Votre prénom" autocomplete="given-name">
+        </div>
+        <div class="field">
+          <label for="nom">Nom <span class="required">*</span></label>
+          <input type="text" id="nom" placeholder="Votre nom" autocomplete="family-name">
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="field">
+          <label for="telephone">Téléphone <span class="required">*</span></label>
+          <input type="tel" id="telephone" placeholder="06 XX XX XX XX" autocomplete="tel">
+        </div>
+        <div class="field">
+          <label for="email">Email</label>
+          <input type="email" id="email" placeholder="votre@email.fr" autocomplete="email">
+        </div>
+      </div>
+
+      <div class="form-grid single">
+        <div class="field">
+          <label for="projet">Votre projet</label>
+          <select id="projet">
+            <option>Je souhaite vendre prochainement</option>
+            <option>Je vends dans 6 à 12 mois</option>
+            <option>Simple curiosité / estimation patrimoniale</option>
+            <option>Autre</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Champ piege anti-spam : doit rester vide -->
+      <input type="text" id="hp" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true">
+
+      <div class="consent-box" id="consent-box">
+        <input type="checkbox" id="consent">
+        <label for="consent">
+          J'accepte que Julien Sabatier (BSK Immobilier) me recontacte au sujet de cette estimation et de mon projet immobilier, par téléphone, SMS ou email, en réponse à ma demande volontaire ci-dessus. <span class="required">*</span>
+        </label>
+      </div>
+      <p class="consent-note">Cette case atteste que vous êtes à l'origine de la demande de contact. Vos données servent uniquement au suivi de votre projet.</p>
+
+      <div class="btn-row">
+        <button type="button" class="btn-prev" data-prev="3">← Retour</button>
+        <button type="button" class="btn-next gold-btn" id="submit-btn" disabled>Obtenir mon estimation ✦</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RESULTAT -->
+<section class="result-section" id="result-section">
+  <div class="result-container">
+    <div class="result-header">
+      <span class="result-tag">Votre estimation personnalisée</span>
+      <h2 class="result-title">Votre bien, <em>analysé</em></h2>
+    </div>
+
+    <div class="result-card">
+      <div class="price-range-display">
+        <div class="price-label">Fourchette de valeur estimée</div>
+        <div class="price-range" id="price-display">0 €</div>
+        <div class="price-sub" id="price-sub">Basé sur les ventes récentes du Pays Mélusin</div>
+      </div>
+
+      <div class="result-factors" id="result-factors"></div>
+
+      <div class="result-analysis">
+        <div class="analysis-title">✦ Analyse du marché local</div>
+        <div class="analysis-text" id="analysis-text"></div>
+      </div>
+    </div>
+
+    <div class="cta-block">
+      <h3 class="cta-title">Affinez votre estimation</h3>
+      <p class="cta-text">Cette estimation est indicative. Votre demande a été transmise à Julien, qui vous recontactera pour un avis de valeur gratuit à domicile, avec un dossier complet de comparaison.</p>
+      <div class="cta-btns">
+        <a class="cta-primary" href="tel:+33630389267">📞 Appeler Julien</a>
+        <a class="cta-secondary" href="https://bskimmobilier.com/julien-sabatier-7852" target="_blank" rel="noopener">Voir mes biens vendus</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-brand">Julien Sabatier · BSK Immobilier</div>
+  <div class="footer-contact">
+    <span>Pays Mélusin, Vienne (86)</span>
+    <a href="tel:+33630389267">06 30 38 92 67</a>
+    <a href="https://bskimmobilier.com/julien-sabatier-7852" target="_blank" rel="noopener">bskimmobilier.com</a>
+  </div>
+</footer>
+<div class="disclaimer">Estimation indicative fournie à titre informatif, sans valeur contractuelle. Les prix effectifs dépendent de l'état précis du bien, de l'évolution du marché et de la négociation. RSAC : 91786954700021 Poitiers.</div>
+
+<script src="script.js" defer></script>
+</body>
+</html>
