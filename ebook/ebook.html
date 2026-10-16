@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>10 conseils pour vendre votre maison · Julien Sabatier, BSK Immobilier</title>
+<style>
+  @page { size: A4; margin: 0; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --dark: #0B2340; --brown: #1B4F72; --gold: #2E86C1; --gold-light: #7FB9E8;
+    --cream: #EEF3F8; --text: #1C2B3A; --muted: #6B7E90; --border: #D3DEE8;
+  }
+  body { font-family: 'Inter', 'DejaVu Sans', sans-serif; color: var(--text); font-size: 10.5pt; line-height: 1.55; background: #fff; }
+  .serif { font-family: 'Caladea', 'Bitstream Charter', Georgia, serif; }
+
+  .page { width: 210mm; height: 297mm; padding: 20mm 20mm 18mm; position: relative; overflow: hidden; page-break-after: always; }
+  .page:last-child { page-break-after: auto; }
+
+  /* Logo texte BSK */
+  .logo { display: inline-flex; align-items: center; gap: 3mm; }
+  .logo-mark { width: 13mm; height: 13mm; border-radius: 2mm; background: var(--gold); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 13pt; letter-spacing: 0.02em; }
+  .logo-text { line-height: 1.15; }
+  .logo-text b { display: block; font-size: 12pt; letter-spacing: 0.18em; font-weight: 700; }
+  .logo-text span { font-size: 7.5pt; letter-spacing: 0.22em; text-transform: uppercase; opacity: 0.75; }
+
+  /* COUVERTURE */
+  .cover { background: var(--dark); color: #fff; display: flex; flex-direction: column; }
+  .cover::before { content: ''; position: absolute; inset: 0;
+    background: radial-gradient(ellipse 70% 50% at 85% 15%, rgba(46,134,193,0.30) 0%, transparent 60%),
+                radial-gradient(ellipse 50% 60% at 5% 95%, rgba(27,79,114,0.45) 0%, transparent 55%); }
+  .cover > * { position: relative; }
+  .cover .logo-text b { color: #fff; }
+  .cover .logo-text span { color: var(--gold-light); opacity: 1; }
+  .cover-body { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+  .eyebrow { font-size: 8.5pt; letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold-light); margin-bottom: 8mm; }
+  .cover h1 { font-size: 40pt; line-height: 1.05; font-weight: 400; margin-bottom: 8mm; }
+  .cover h1 em { color: var(--gold-light); font-style: italic; }
+  .cover .lead { font-size: 12pt; color: rgba(255,255,255,0.75); max-width: 135mm; font-weight: 300; }
+  .big-num { font-size: 150pt; line-height: 0.8; color: rgba(127,185,232,0.16); position: absolute; right: 14mm; top: 70mm; font-weight: 700; }
+  .cover-foot { border-top: 1px solid rgba(255,255,255,0.15); padding-top: 6mm; display: flex; justify-content: space-between; font-size: 9pt; color: rgba(255,255,255,0.65); }
+  .cover-foot b { color: #fff; font-weight: 600; }
+
+  /* PAGES INTERIEURES */
+  .head { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 4mm; margin-bottom: 9mm; }
+  .head .logo-mark { width: 9mm; height: 9mm; font-size: 9pt; border-radius: 1.5mm; }
+  .head .logo-text b { font-size: 9pt; color: var(--dark); }
+  .head .logo-text span { font-size: 6pt; color: var(--muted); }
+  .head .chap { font-size: 8pt; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); }
+  .foot { position: absolute; left: 20mm; right: 20mm; bottom: 10mm; display: flex; justify-content: space-between; font-size: 7.5pt; color: var(--muted); }
+
+  h2 { font-size: 24pt; font-weight: 400; color: var(--dark); line-height: 1.15; margin-bottom: 5mm; }
+  h2 em { color: var(--brown); font-style: italic; }
+  p + p { margin-top: 3mm; }
+
+  .intro p { font-size: 11pt; }
+  .summary { margin-top: 9mm; border: 1px solid var(--border); border-radius: 3mm; padding: 6mm 7mm; background: var(--cream); }
+  .summary h3 { font-size: 8.5pt; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 4mm; }
+  .summary ol { list-style: none; columns: 2; column-gap: 8mm; }
+  .summary li { display: flex; gap: 3mm; padding: 1.6mm 0; break-inside: avoid; font-size: 10pt; }
+  .summary li b { color: var(--gold); min-width: 6mm; }
+  .note { margin-top: 8mm; font-size: 9pt; color: var(--muted); border-left: 2px solid var(--gold-light); padding-left: 4mm; }
+
+  .tip { margin-bottom: 9mm; break-inside: avoid; }
+  .tip-top { display: flex; align-items: baseline; gap: 5mm; margin-bottom: 3mm; }
+  .tip-num { font-size: 34pt; color: var(--gold); line-height: 1; min-width: 16mm; }
+  .tip h3 { font-size: 16pt; font-weight: 400; color: var(--dark); line-height: 1.2; }
+  .tip-body { padding-left: 21mm; }
+  .tip ul { margin: 2.5mm 0 0 4mm; }
+  .tip li { margin-bottom: 1.2mm; }
+  .key { margin-top: 3.5mm; background: var(--cream); border-radius: 2mm; padding: 3.5mm 4.5mm; font-size: 9.5pt; }
+  .key b { color: var(--brown); text-transform: uppercase; font-size: 7.5pt; letter-spacing: 0.15em; display: block; margin-bottom: 1mm; }
+
+  /* PAGE CONTACT */
+  .contact { background: var(--dark); color: #fff; display: flex; flex-direction: column; }
+  .contact::before { content: ''; position: absolute; inset: 0;
+    background: radial-gradient(ellipse 60% 50% at 15% 10%, rgba(46,134,193,0.28) 0%, transparent 60%); }
+  .contact > * { position: relative; }
+  .contact .logo-text b { color: #fff; }
+  .contact .logo-text span { color: var(--gold-light); opacity: 1; }
+  .contact-body { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+  .contact h2 { color: #fff; font-size: 30pt; }
+  .contact h2 em { color: var(--gold-light); }
+  .contact .lead { color: rgba(255,255,255,0.78); font-size: 11.5pt; max-width: 150mm; }
+  .checks { margin: 8mm 0; list-style: none; }
+  .checks li { padding: 2mm 0 2mm 8mm; position: relative; color: rgba(255,255,255,0.85); }
+  .checks li::before { content: '✓'; position: absolute; left: 0; color: var(--gold-light); font-weight: 700; }
+  .card { background: rgba(255,255,255,0.06); border: 1px solid rgba(127,185,232,0.35); border-radius: 3mm; padding: 7mm 8mm; display: flex; justify-content: space-between; align-items: center; gap: 6mm; }
+  .card .name { font-size: 18pt; }
+  .card .role { font-size: 8.5pt; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold-light); margin-top: 1mm; }
+  .card .coords { text-align: right; font-size: 10.5pt; line-height: 1.8; }
+  .card .coords b { font-size: 15pt; color: #fff; }
+  .card a { color: var(--gold-light); text-decoration: none; }
+  .legal { margin-top: 8mm; font-size: 7.5pt; color: rgba(255,255,255,0.45); line-height: 1.5; }
+</style>
+</head>
+<body>
+
+<!-- 1. COUVERTURE -->
+<section class="page cover">
+  <div class="logo">
+    <div class="logo-mark">BSK</div>
+    <div class="logo-text"><b>BSK IMMOBILIER</b><span>Julien Sabatier · Pays Mélusin</span></div>
+  </div>
+  <div class="big-num serif">10</div>
+  <div class="cover-body">
+    <div class="eyebrow">Guide offert · lecture 10 minutes</div>
+    <h1 class="serif">Vendre votre maison<br><em>au bon prix</em>,<br>sereinement</h1>
+    <p class="lead">Les 10 conseils les plus efficaces pour préparer, présenter et sécuriser la vente de votre bien, tirés de 14 ans de terrain dans le Pays Mélusin.</p>
+  </div>
+  <div class="cover-foot">
+    <span><b>Julien Sabatier</b> · Conseiller BSK Immobilier</span>
+    <span>06 30 38 92 67</span>
+  </div>
+</section>
+
+<!-- 2. INTRODUCTION -->
+<section class="page intro">
+  <div class="head">
+    <div class="logo"><div class="logo-mark">BSK</div><div class="logo-text"><b>BSK IMMOBILIER</b><span>Pays Mélusin</span></div></div>
+    <div class="chap">Avant de commencer</div>
+  </div>
+
+  <h2 class="serif">Une vente réussie <em>se prépare</em></h2>
+  <p>Vous venez d'obtenir une première estimation de votre bien. C'est le bon moment pour poser les bases d'une vente rapide et au juste prix.</p>
+  <p>Dans la plupart des ventes qui traînent, on retrouve les mêmes causes : un prix de départ trop ambitieux, une annonce peu engageante, un dossier incomplet qui fait hésiter l'acheteur ou une négociation mal préparée. Ces écueils sont évitables.</p>
+  <p>Ce guide va à l'essentiel. Chaque conseil se lit en une minute et s'applique dès aujourd'hui, que vous vendiez seul ou accompagné.</p>
+
+  <div class="summary">
+    <h3>Les 10 conseils</h3>
+    <ol>
+      <li><b>01</b> Fixer le bon prix dès le départ</li>
+      <li><b>02</b> Faire les diagnostics avant l'annonce</li>
+      <li><b>03</b> Rassembler les bons documents</li>
+      <li><b>04</b> Désencombrer et dépersonnaliser</li>
+      <li><b>05</b> Soigner les photos</li>
+      <li><b>06</b> Rédiger une annonce précise</li>
+      <li><b>07</b> Qualifier les acheteurs</li>
+      <li><b>08</b> Réussir chaque visite</li>
+      <li><b>09</b> Négocier avec méthode</li>
+      <li><b>10</b> Sécuriser jusqu'à l'acte</li>
+    </ol>
+  </div>
+
+  <p class="note">Les règles citées (diagnostics, délais) sont celles en vigueur à la date de rédaction, octobre 2026. Votre notaire reste la référence pour votre situation précise.</p>
+
+  <div class="foot"><span>Julien Sabatier · BSK Immobilier</span><span>2</span></div>
+</section>
+
+<!-- 3. CONSEILS 1 ET 2 -->
+<section class="page">
+  <div class="head">
+    <div class="logo"><div class="logo-mark">BSK</div><div class="logo-text"><b>BSK IMMOBILIER</b><span>Pays Mélusin</span></div></div>
+    <div class="chap">Préparer</div>
+  </div>
+
+  <div class="tip">
+    <div class="tip-top"><div class="tip-num serif">01</div><h3 class="serif">Fixer le bon prix dès le départ</h3></div>
+    <div class="tip-body">
+      <p>C'est le conseil qui compte le plus. Un bien affiché trop cher attire peu de visites, reste en ligne des mois et finit souvent par se vendre en dessous de sa vraie valeur, car les acheteurs se demandent pourquoi personne ne l'a acheté.</p>
+      <ul>
+        <li>Comparez avec des <b>ventes réellement conclues</b> près de chez vous. Le site public DVF (app.dvf.etalab.gouv.fr) les recense.</li>
+        <li>Les prix des annonces en ligne sont des prix demandés. Ils sont souvent au-dessus des prix de vente finaux.</li>
+        <li>Prévoyez une petite marge de négociation, sans gonfler le prix.</li>
+      </ul>
+      <div class="key"><b>À retenir</b>Les premières semaines de diffusion sont celles où l'annonce attire le plus d'attention. Un prix juste dès le départ en tire tout le bénéfice.</div>
+    </div>
+  </div>
+
+  <div class="tip">
+    <div class="tip-top"><div class="tip-num serif">02</div><h3 class="serif">Faire les diagnostics avant l'annonce</h3></div>
+    <div class="tip-body">
+      <p>Le DPE est obligatoire dès la mise en vente : ses classes énergie et climat doivent figurer dans l'annonce. Les autres diagnostics seront exigés au compromis. Les faire tôt évite les mauvaises surprises et rassure l'acheteur.</p>
+      <ul>
+        <li><b>Toujours</b> : DPE, état des risques (ERP).</li>
+        <li><b>Selon le bien</b> : amiante (permis avant juillet 1997), plomb (avant 1949), électricité et gaz (installations de plus de 15 ans), termites (zones classées).</li>
+        <li><b>À la campagne</b> : contrôle de l'assainissement individuel (fosse septique), à jour depuis moins de 3 ans.</li>
+        <li><b>Maisons classées E, F ou G</b> : un audit énergétique est aussi exigé.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="foot"><span>Julien Sabatier · BSK Immobilier</span><span>3</span></div>
+</section>
+
+<!-- 4. CONSEILS 3 ET 4 -->
+<section class="page">
+  <div class="head">
+    <div class="logo"><div class="logo-mark">BSK</div><div class="logo-text"><b>BSK IMMOBILIER</b><span>Pays Mélusin</span></div></div>
+    <div class="chap">Préparer</div>
+  </div>
+
+  <div class="tip">
+    <div class="tip-top"><div class="tip-num serif">03</div><h3 class="serif">Rassembler les bons documents</h3></div>
+    <div class="tip-body">
+      <p>Un acheteur qui a toutes les réponses sous les yeux se décide plus vite et négocie moins. Préparez un dossier complet, papier et numérique :</p>
+      <ul>
+        <li>Titre de propriété et dernier avis de taxe foncière.</li>
+        <li>Factures des travaux réalisés et attestations d'assurance décennale des artisans pour les travaux de moins de 10 ans.</li>
+        <li>Permis de construire ou déclarations préalables (extension, véranda, piscine).</li>
+        <li>Factures d'énergie sur un an, contrats d'entretien (chaudière, pompe à chaleur, ramonage).</li>
+      </ul>
+      <div class="key"><b>À retenir</b>Un agrandissement non déclaré peut bloquer ou retarder la vente. Vérifiez-le maintenant, avant qu'un acheteur ou le notaire ne le découvre.</div>
+    </div>
+  </div>
+
+  <div class="tip">
+    <div class="tip-top"><div class="tip-num serif">04</div><h3 class="serif">Désencombrer et dépersonnaliser</h3></div>
+    <div class="tip-body">
+      <p>L'acheteur doit pouvoir s'imaginer chez lui. Quelques heures de préparation suffisent souvent à changer la perception d'un bien :</p>
+      <ul>
+        <li>Videz au maximum les placards, plans de travail et rebords de fenêtres.</li>
+        <li>Rangez les photos de famille et les objets très personnels.</li>
+        <li>Réglez les petits défauts visibles : ampoule grillée, poignée qui tient mal, joint noirci, robinet qui goutte.</li>
+        <li>Un coup de peinture claire sur un mur marqué coûte peu et se remarque beaucoup.</li>
+        <li>Dehors : pelouse tondue, haies taillées, entrée dégagée. La première impression se fait dès le portail.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="foot"><span>Julien Sabatier · BSK Immobilier</span><span>4</span></div>
+</section>
+
+<!-- 5. CONSEILS 5 ET 6 -->
+<section class="page">
+  <div class="head">
+    <div class="logo"><div class="logo-mark">BSK</div><div class="logo-text"><b>BSK IMMOBILIER</b><span>Pays Mélusin</span></div></div>
+    <div class="chap">Présenter</div>
+  </div>
+
+  <div class="tip">
+    <div class="tip-top"><div class="tip-num serif">05</div><h3 class="serif">Soigner les photos</h3></div>
+    <div class="tip-body">
+      <p>Sur les sites d'annonces, la photo principale décide si l'acheteur clique ou passe son chemin. Les photos font la plus grande partie du travail de votre annonce.</p>
+      <ul>
+        <li>Photographiez en journée, lumières allumées et volets grands ouverts.</li>
+        <li>Tenez l'appareil bien droit, à hauteur de poitrine, avec un léger grand angle sans déformer les pièces.</li>
+        <li>Choisissez comme première photo la vue la plus forte : façade ensoleillée, séjour lumineux ou jardin.</li>
+        <li>Comptez 15 à 20 photos : chaque pièce, l'extérieur, les atouts (dépendance, vue, piscine).</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="tip">
+    <div class="tip-top"><div class="tip-num serif">06</div><h3 class="serif">Rédiger une annonce précise et honnête</h3></div>
+    <div class="tip-body">
+      <p>Une bonne annonce attire les bons acheteurs et décourage ceux pour qui le bien ne convient pas. Vous gagnez du temps et vous évitez les visites inutiles.</p>
+      <ul>
+        <li>Les essentiels en premier : surface habitable, terrain, nombre de chambres, chauffage, DPE.</li>
+        <li>Les atouts concrets : travaux récents, toiture refaite, garage, calme, école ou commerces à pied, temps de trajet vers Poitiers ou Niort.</li>
+        <li>Les points faibles, dits simplement. Un défaut annoncé se négocie mieux qu'un défaut découvert pendant la visite.</li>
+      </ul>
+      <div class="key"><b>À retenir</b>Racontez la vie dans la maison : « grand séjour ouvert sur la terrasse plein sud » parle plus qu'un simple « séjour de 35 m² ».</div>
+    </div>
+  </div>
+
+  <div class="foot"><span>Julien Sabatier · BSK Immobilier</span><span>5</span></div>
+</section>
+
+<!-- 6. CONSEILS 7 ET 8 -->
+<section class="page">
+  <div class="head">
+    <div class="logo"><div class="logo-mark">BSK</div><div class="logo-text"><b>BSK IMMOBILIER</b><span>Pays Mélusin</span></div></div>
+    <div class="chap">Faire visiter</div>
+  </div>
+
+  <div class="tip">
+    <div class="tip-top"><div class="tip-num serif">07</div><h3 class="serif">Qualifier les acheteurs avant la visite</h3></div>
+    <div class="tip-body">
+      <p>Une visite prend du temps et de l'énergie. Un échange de cinq minutes au téléphone permet de savoir si l'acheteur peut vraiment acheter :</p>
+      <ul>
+        <li>Son projet : résidence principale, secondaire, investissement ?</li>
+        <li>Son financement : a-t-il un apport, a-t-il vu sa banque ou un courtier ?</li>
+        <li>Son calendrier : doit-il d'abord vendre son propre logement ?</li>
+      </ul>
+      <div class="key"><b>À retenir</b>Ne laissez pas d'objets de valeur ni de papiers personnels en vue pendant les visites, et organisez-les plutôt à deux.</div>
+    </div>
+  </div>
+
+  <div class="tip">
+    <div class="tip-top"><div class="tip-num serif">08</div><h3 class="serif">Réussir chaque visite</h3></div>
+    <div class="tip-body">
+      <p>Une visite réussie dure assez longtemps pour que l'acheteur se projette et pose ses questions.</p>
+      <ul>
+        <li>Aérez, ouvrez tous les volets et chauffez à une température agréable.</li>
+        <li>Faites garder les animaux et limitez le nombre de personnes présentes.</li>
+        <li>Préparez un parcours qui se termine par le point fort du bien : la terrasse, le jardin ou la vue.</li>
+        <li>Laissez l'acheteur explorer à son rythme, répondez sans tout survendre.</li>
+        <li>Gardez à portée de main le dossier du conseil 3 et les diagnostics.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="foot"><span>Julien Sabatier · BSK Immobilier</span><span>6</span></div>
+</section>
+
+<!-- 7. CONSEILS 9 ET 10 -->
+<section class="page">
+  <div class="head">
+    <div class="logo"><div class="logo-mark">BSK</div><div class="logo-text"><b>BSK IMMOBILIER</b><span>Pays Mélusin</span></div></div>
+    <div class="chap">Conclure</div>
+  </div>
+
+  <div class="tip">
+    <div class="tip-top"><div class="tip-num serif">09</div><h3 class="serif">Négocier avec méthode</h3></div>
+    <div class="tip-body">
+      <p>La négociation se prépare avant la première offre, à tête reposée.</p>
+      <ul>
+        <li>Fixez à l'avance votre prix plancher et gardez-le pour vous.</li>
+        <li>Demandez toujours une offre écrite, avec le prix, le mode de financement et les conditions.</li>
+        <li>Ne répondez pas à chaud. Prenez 24 heures pour réfléchir.</li>
+        <li>Argumentez une contre-proposition avec des faits : travaux réalisés, ventes comparables, DPE.</li>
+      </ul>
+      <div class="key"><b>À retenir</b>La meilleure offre est celle qui ira jusqu'à la signature : un acheteur bien financé à un prix légèrement inférieur peut valoir mieux qu'une offre élevée au financement fragile.</div>
+    </div>
+  </div>
+
+  <div class="tip">
+    <div class="tip-top"><div class="tip-num serif">10</div><h3 class="serif">Sécuriser la vente jusqu'à l'acte</h3></div>
+    <div class="tip-body">
+      <p>Une offre acceptée reste une étape. La vente est définitive à la signature de l'acte chez le notaire, en général deux à trois mois après le compromis.</p>
+      <ul>
+        <li>Faites rédiger le compromis par un notaire.</li>
+        <li>L'acheteur dispose de 10 jours de rétractation après le compromis.</li>
+        <li>La condition suspensive de prêt fixe un délai pour obtenir son crédit : suivez-le de près.</li>
+        <li>Entretenez et assurez le bien jusqu'au jour de l'acte.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="foot"><span>Julien Sabatier · BSK Immobilier</span><span>7</span></div>
+</section>
+
+<!-- 8. CONTACT -->
+<section class="page contact">
+  <div class="logo">
+    <div class="logo-mark">BSK</div>
+    <div class="logo-text"><b>BSK IMMOBILIER</b><span>Julien Sabatier · Pays Mélusin</span></div>
+  </div>
+  <div class="contact-body">
+    <div class="eyebrow">Et maintenant ?</div>
+    <h2 class="serif">Affinons votre estimation <em>ensemble</em></h2>
+    <p class="lead">L'estimation en ligne donne une première fourchette à partir de quelques critères. Une visite sur place permet d'aller beaucoup plus loin et de fixer un prix précis, défendable face aux acheteurs.</p>
+    <ul class="checks">
+      <li>Prise en compte de l'état réel, des prestations et des travaux réalisés</li>
+      <li>Comparaison avec les ventes récentes de votre secteur</li>
+      <li>Échange sur votre projet, votre calendrier et vos priorités</li>
+      <li>Avis de valeur écrit, gratuit et sans engagement</li>
+    </ul>
+    <div class="card">
+      <div>
+        <div class="name serif">Julien Sabatier</div>
+        <div class="role">Conseiller BSK Immobilier · 14 ans d'expérience locale</div>
+      </div>
+      <div class="coords">
+        <b>06 30 38 92 67</b><br>
+        j.sabatier@bskimmobilier.com<br>
+        <a href="https://bskimmobilier.com/julien-sabatier-7852">bskimmobilier.com/julien-sabatier-7852</a>
+      </div>
+    </div>
+    <p class="legal">Rouillé, Lusignan, Saint-Sauvant et tout le Pays Mélusin (Vienne, 86). Conseils fournis à titre informatif, sans valeur juridique. RSAC : 91786954700021 Poitiers.</p>
+  </div>
+</section>
+
+</body>
+</html>
