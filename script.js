@@ -171,11 +171,22 @@ function calculerEstimation(data) {
    Aucune ouverture de messagerie cote visiteur.
    ========================================================== */
 
-// "META" si le visiteur arrive d'une pub Facebook / Instagram, sinon "BSK".
+// Canal d'arrivée du visiteur, d'après le paramètre utm_source du lien.
+// Valeurs reconnues par le scénario Make (catégorie SOURCE de Brevo) :
+// META, GROUPES_FB, GOOGLE, EMAIL, RESEAU, BSK (par défaut).
+// L'utm_source est lu en premier : Facebook ajoute aussi fbclid aux liens
+// partagés dans les groupes, qui doivent rester distincts de la pub.
 function detecterSource() {
   const params = new URLSearchParams(window.location.search);
   const utm = (params.get("utm_source") || "").toLowerCase();
-  if (params.has("fbclid") || /facebook|meta|instagram|^fb$|^ig$/.test(utm)) return "META";
+  if (/groupe/.test(utm)) return "GROUPES_FB";
+  if (/facebook|meta|instagram|^fb$|^ig$/.test(utm)) return "META";
+  if (/google/.test(utm)) return "GOOGLE";
+  if (/email|mail|brevo|newsletter/.test(utm)) return "EMAIL";
+  if (/reseau|whatsapp|sms|parrain/.test(utm)) return "RESEAU";
+  if (utm) return "BSK";
+  if (params.has("fbclid")) return "META";
+  if (params.has("gclid")) return "GOOGLE";
   return "BSK";
 }
 
@@ -187,6 +198,8 @@ async function envoyerVersMake(data, est) {
     prix_max: est.prix_max,
     prix_m2: est.prix_m2,
     source: detecterSource(),
+    utm_source: new URLSearchParams(window.location.search).get("utm_source") || "",
+    utm_campaign: new URLSearchParams(window.location.search).get("utm_campaign") || "",
     page: window.location.href,
     date_demande: new Date().toISOString(),
     botcheck: $("hp").value

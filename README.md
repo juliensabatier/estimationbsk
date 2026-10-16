@@ -28,6 +28,19 @@ Le projet est un site statique : il suffit de déposer `index.html`, `style.css`
 
 Après chaque mise en ligne, rechercher "mailto" dans les fichiers déployés : il ne doit apparaître nulle part. Un fichier déployé qui contient encore `mailto:` est une ancienne version.
 
+## Liens à diffuser selon le canal
+
+Le paramètre `utm_source` indique d'où vient le lead (visible dans Brevo, champ SOURCE, et dans le mail de notification). `utm_campaign` est libre, pour distinguer deux pubs ou deux mois.
+
+| Canal | Lien |
+|---|---|
+| Publicité Facebook / Instagram | `https://juliensabatier.github.io/estimationbsk/?utm_source=facebook&utm_campaign=estim-novembre` |
+| Groupes Facebook locaux | `https://juliensabatier.github.io/estimationbsk/?utm_source=groupe_fb` |
+| Google (fiche ou Ads) | `https://juliensabatier.github.io/estimationbsk/?utm_source=google` |
+| Campagne email Brevo | `https://juliensabatier.github.io/estimationbsk/?utm_source=brevo` |
+| WhatsApp, SMS, réseau | `https://juliensabatier.github.io/estimationbsk/?utm_source=whatsapp` |
+| Signature mail, page BSK, annonces | `https://juliensabatier.github.io/estimationbsk/?utm_source=signature` (classé BSK) |
+
 ## Modifier
 
 - Prix au m² : `script.js`, section CONFIGURATION.
