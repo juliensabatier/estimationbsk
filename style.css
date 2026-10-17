@@ -727,6 +727,8 @@ footer {
 }
 
 .field-note { font-size: 0.72rem; color: var(--muted); margin-top: 0.2rem; }
+/* Champs masqués selon le type de bien (ex : terrain) */
+[hidden] { display: none !important; }
 .required { color: var(--gold); }
 hr.divider { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
 

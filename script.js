@@ -23,6 +23,17 @@ const COMMUNES_VALORISEES = ["Lusignan", "Rouillé"];
 const COEF_COMMUNE_VALORISEE = 1.05;
 const MARGE_FOURCHETTE = 0.08; // fourchette = estimation -8% / +8%
 
+// Barème des terrains (euros par m2 de terrain), selon la situation choisie.
+// VALEURS PROVISOIRES, à valider par Julien avec les ventes récentes du secteur.
+const PRIX_M2_TERRAIN = {
+  "Terrain constructible et viabilisé": 35,
+  "Terrain constructible à viabiliser": 25,
+  "Terrain non constructible": 1,
+  "Terrain, constructibilité à vérifier": 20
+};
+const MARGE_FOURCHETTE_TERRAIN = 0.15; // fourchette plus large pour un terrain
+const NON_APPLICABLE = "Non applicable (terrain)";
+
 /* ==========================================================
    ETAT
    ========================================================== */
@@ -57,14 +68,51 @@ function setStep(n) {
   window.scrollTo({ top: $("form-section").offsetTop - 20, behavior: "smooth" });
 }
 
+function estTerrain() { return selectedType === "Terrain"; }
+
+// Affiche les champs adaptés au type de bien : un terrain n'a ni surface
+// habitable, ni année de construction, ni pièces, chauffage, DPE, etc.
+function adapterFormulaire() {
+  const terrain = estTerrain();
+
+  $("field-surface").hidden = terrain;
+  $("field-annee").hidden = terrain;
+  $("bloc-habitable").hidden = terrain;
+  $("bloc-terrain").hidden = !terrain;
+
+  $("terrain-label").textContent = terrain ? "Surface du terrain (m²)" : "Terrain (m²)";
+  $("terrain-required").hidden = !terrain;
+  $("terrain-note").hidden = terrain;
+  $("terrain").placeholder = terrain ? "ex: 1200" : "ex: 800";
+
+  $("step2-desc").textContent = terrain
+    ? "Décrivez la situation de votre terrain."
+    : "Décrivez l'état et les équipements de votre bien.";
+  $("points_forts").placeholder = terrain
+    ? "Ex: bornage réalisé, accès facile, vue dégagée, réseaux en bordure…"
+    : "Ex: piscine, dépendances, cuisine récente, proche gare, calme absolu…";
+
+  // L'état choisi pour une maison ne vaut pas pour un terrain, et inversement
+  selectedEtat = "";
+  document.querySelectorAll(".etat-card").forEach(c => c.classList.remove("selected"));
+}
+
 function nextStep(from) {
   if (from === 1) {
     if (!$("commune").value) return showError("Veuillez sélectionner une commune.");
-    if (!$("surface").value) return showError("Veuillez indiquer la surface habitable.");
+    if (estTerrain()) {
+      if (!$("terrain").value) return showError("Veuillez indiquer la surface du terrain.");
+    } else if (!$("surface").value) {
+      return showError("Veuillez indiquer la surface habitable.");
+    }
   }
   if (from === 2) {
-    if (!selectedEtat) return showError("Veuillez sélectionner l'état général du bien.");
-    if (!$("pieces").value) return showError("Veuillez indiquer le nombre de pièces.");
+    if (estTerrain()) {
+      if (!selectedEtat) return showError("Veuillez indiquer la situation du terrain.");
+    } else {
+      if (!selectedEtat) return showError("Veuillez sélectionner l'état général du bien.");
+      if (!$("pieces").value) return showError("Veuillez indiquer le nombre de pièces.");
+    }
   }
   setStep(from + 1);
 }
@@ -78,7 +126,9 @@ function bindEvents() {
     card.addEventListener("click", () => {
       document.querySelectorAll(".type-card").forEach(c => c.classList.remove("selected"));
       card.classList.add("selected");
+      const avant = selectedType;
       selectedType = card.dataset.type;
+      if ((avant === "Terrain") !== estTerrain()) adapterFormulaire();
     });
   });
 
@@ -113,6 +163,30 @@ function bindEvents() {
    ========================================================== */
 
 function collectData() {
+  if (estTerrain()) {
+    return {
+      type: selectedType,
+      commune: $("commune").value,
+      surface: "",
+      terrain: $("terrain").value,
+      annee: NON_APPLICABLE,
+      etat: selectedEtat,
+      pieces: NON_APPLICABLE,
+      chambres: NON_APPLICABLE,
+      sdb: NON_APPLICABLE,
+      chauffage: NON_APPLICABLE,
+      dpe: NON_APPLICABLE,
+      garage: NON_APPLICABLE,
+      exposition: $("exposition").value || "Non précisée",
+      environnement: $("environnement").value || "Non précisé",
+      points_forts: $("points_forts").value.trim() || "Aucun",
+      prenom: $("prenom").value.trim(),
+      nom: $("nom").value.trim(),
+      telephone: $("telephone").value.trim(),
+      email: $("email").value.trim() || "Non renseigné",
+      projet: $("projet").value
+    };
+  }
   return {
     type: selectedType,
     commune: $("commune").value,
@@ -137,7 +211,38 @@ function collectData() {
   };
 }
 
+function calculerEstimationTerrain(data) {
+  const surface = parseInt(data.terrain, 10) || 1000;
+  let prixM2 = PRIX_M2_TERRAIN[data.etat] || PRIX_M2_TERRAIN["Terrain, constructibilité à vérifier"];
+  if (COMMUNES_VALORISEES.includes(data.commune)) prixM2 *= COEF_COMMUNE_VALORISEE;
+  const base = surface * prixM2;
+
+  const atouts = ["Terrain situé dans le Pays Mélusin"];
+  const vigilances = [];
+  if (data.etat === "Terrain constructible et viabilisé") atouts.push("Terrain prêt à bâtir");
+  if (["Sud", "Sud-Est", "Sud-Ouest"].includes(data.exposition)) atouts.push("Bonne exposition");
+  if (["Vue dégagée", "Lotissement calme"].includes(data.environnement)) atouts.push("Environnement calme et agréable");
+  if (data.points_forts !== "Aucun") atouts.push(data.points_forts.split(",")[0].trim());
+  if (data.etat === "Terrain constructible à viabiliser") vigilances.push("Coût des raccordements à intégrer dans le prix");
+  if (data.etat === "Terrain non constructible") vigilances.push("Valeur limitée tant que le terrain n'est pas constructible");
+  if (data.etat === "Terrain, constructibilité à vérifier") vigilances.push("Constructibilité à vérifier au PLU de la commune");
+  if (data.environnement === "Proche axe passant") vigilances.push("Proximité d'un axe passant, à vérifier avec les acquéreurs");
+  if (!vigilances.length) vigilances.push("Bornage et accès à confirmer lors d'une visite");
+
+  // Arrondi à la centaine pour les petits montants (terrain non constructible)
+  const arrondi = base < 20000 ? 100 : 1000;
+  return {
+    prix_min: Math.round(base * (1 - MARGE_FOURCHETTE_TERRAIN) / arrondi) * arrondi,
+    prix_max: Math.round(base * (1 + MARGE_FOURCHETTE_TERRAIN) / arrondi) * arrondi,
+    prix_m2: Math.round(prixM2),
+    analyse: `Votre terrain de ${surface} m² à ${data.commune} a été estimé selon sa situation : "${data.etat}". Pour un terrain, la constructibilité, la viabilisation et l'accès pèsent plus que tout le reste. Un avis de valeur sur place par Julien permettra de l'affiner avec les ventes récentes du secteur.`,
+    atouts: atouts.slice(0, 3),
+    vigilances: vigilances.slice(0, 2)
+  };
+}
+
 function calculerEstimation(data) {
+  if (data.type === "Terrain") return calculerEstimationTerrain(data);
   const surface = parseInt(data.surface, 10) || 100;
   let prixM2 = PRIX_M2_PAR_ETAT[data.etat] || PRIX_M2_DEFAUT;
   if (COMMUNES_VALORISEES.includes(data.commune)) prixM2 *= COEF_COMMUNE_VALORISEE;
@@ -237,7 +342,9 @@ function construireRecap(data, est) {
     "--- BIEN ---",
     `Type : ${data.type}`,
     `Commune : ${data.commune}`,
-    `Surface : ${data.surface} m²  |  Terrain : ${data.terrain} m²`,
+    data.type === "Terrain"
+      ? `Surface du terrain : ${data.terrain} m²`
+      : `Surface : ${data.surface} m²  |  Terrain : ${data.terrain} m²`,
     `Année : ${data.annee}  |  État : ${data.etat}`,
     `Pièces : ${data.pieces}  |  Chambres : ${data.chambres}  |  SdB : ${data.sdb}`,
     `Chauffage : ${data.chauffage}  |  DPE : ${data.dpe}  |  Garage : ${data.garage}`,
@@ -325,8 +432,9 @@ function showResults(data, est) {
   // Construction par le DOM et textContent : aucune injection HTML possible
   const factors = $("result-factors");
   factors.textContent = "";
+  const terrain = data.type === "Terrain";
   [
-    ["📐", `${data.surface} m²`, "Surface"],
+    terrain ? ["📐", `${data.terrain} m²`, "Surface du terrain"] : ["📐", `${data.surface} m²`, "Surface"],
     ["🏷️", `${est.prix_m2} €/m²`, "Prix estimé"],
     ["📍", data.commune, "Commune"]
   ].forEach(([icone, valeur, libelle]) => {
