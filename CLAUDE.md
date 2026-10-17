@@ -32,7 +32,7 @@ Aucune dépendance, aucun build. Un simple serveur statique suffit (`python3 -m 
 - Suivi des canaux : `detecterSource()` dans `script.js` lit d'abord `utm_source` (groupe → GROUPES_FB, facebook/instagram/meta → META, google → GOOGLE, email/brevo/newsletter → EMAIL, reseau/whatsapp/sms → RESEAU, autre valeur → BSK), puis à défaut `fbclid` (META) et `gclid` (GOOGLE). Le module « Nettoyage téléphone / email » de Make convertit ce texte en valeur de la catégorie Brevo SOURCE : 1 BSK, 2 META, 3 RESEAU, 4 MARIAGE.NET (autre scénario), 5 GOOGLE, 6 GROUPES FB, 7 EMAIL. Ajouter un canal = l'ajouter aux trois endroits (script.js, Make, catégorie Brevo). `utm_source` et `utm_campaign` bruts apparaissent dans le mail de notification.
 - Clé Web3Forms (secours) : constante `WEB3FORMS_ACCESS_KEY` en haut de `script.js`. Cette clé est publique par conception, elle est liée à l'adresse mail de travail utilisée à la création du compte Web3Forms (j.sabatier@bskimmobilier.com).
 - Type « Terrain » : `adapterFormulaire()` masque surface habitable, année, état, pièces, chambres, SdB, chauffage, DPE, garage, et affiche « Surface du terrain » (obligatoire) et « Situation du terrain » (constructible et viabilisé, à viabiliser, non constructible, je ne sais pas). La situation est envoyée dans le champ `etat` (attribut Brevo ETAT_BIEN), `surface` part vide, les champs habitables partent en « Non applicable (terrain) ». Calcul : `calculerEstimationTerrain` avec `PRIX_M2_TERRAIN` et `MARGE_FOURCHETTE_TERRAIN`.
-- Barème de prix : constantes `PRIX_M2_PAR_ETAT`, `COMMUNES_VALORISEES`, `COEF_COMMUNE_VALORISEE`, `MARGE_FOURCHETTE` dans `script.js`.
+- Barème de prix (calé le 17/10/2026 sur DVF 2021-2025, 1 609 maisons et 101 terrains à bâtir sur 15 communes) : prix maison = surface x `PRIX_M2_PAR_ETAT` x `coefCommune` (table `COEF_COMMUNE`, écart de la médiane communale au secteur) x `coefSurface` (prix ~ surface^0,75, référence 92 m²) x `coefTerrain` (référence 1 050 m², forte décote sous 300 m², champ vide compté 200 m²). Test sur 865 ventes 2023-2025 : écart médian 1 %, toutes communes à ±7 %. Les libellés « Couhé » et « Benassay » correspondent dans DVF à Valence-en-Poitou et Boivre-la-Vallée. Terrain : 42 €/m² jusqu'à 800 m² puis 8 €/m², x coefficient de situation x coefficient commune ; non constructible 0,50 €/m².
 - Liste des communes : `<select id="commune">` dans `index.html`.
 
 ## Conventions
@@ -44,7 +44,7 @@ Aucune dépendance, aucun build. Un simple serveur statique suffit (`python3 -m 
 
 ## Points ouverts
 
-- Le barème de prix est une formule simple (surface x prix au m² selon l'état). Il n'est pas calibré sur des données de ventes réelles. Julien doit le valider ou l'ajuster avant diffusion large. Le barème terrain (`PRIX_M2_TERRAIN`) est provisoire, à valider aussi.
+- Barème calé sur DVF, mais DVF ne connaît ni l'état, ni le DPE, ni l'assainissement : la correspondance état / prix au m² et la décote « à viabiliser » sont des hypothèses. À affiner avec l'export des ventes de Julien. Pistes : DPE, plain-pied, assainissement, type de bien (longère, appartement).
 - Politique de confidentialité : en ligne. À mettre à jour si un pixel Meta, une mesure d'audience ou un nouveau prestataire est ajouté. Adresse postale du responsable non indiquée (à ajouter si Julien le souhaite).
 - Envoi SMS : non implémenté. Nécessiterait un service payant et un petit serveur intermédiaire.
 - Pixel Meta et suivi de conversion : non installés.

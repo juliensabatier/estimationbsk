@@ -11,26 +11,79 @@ const MAKE_WEBHOOK_URL = "https://hook.eu1.make.com/ya9za12hm6phh3ydfuiwiwqtrrwv
 const WEB3FORMS_ACCESS_KEY = "2217a974-c3d8-40d4-a3f1-d0ad6afb05f3";
 const WEB3FORMS_ENDPOINT = "https://api.web3forms.com/submit";
 
-// Barème du calcul local (euros par m2). Ajustable selon les ventes récentes.
+/* Barème calé sur les ventes réelles DVF (data.gouv.fr) du secteur, 2021 à 2025 :
+   1 609 maisons et 101 terrains à bâtir sur 15 communes (analyse du 17/10/2026).
+   Maison type du secteur : 92 m², 1 050 m² de terrain, 1 121 €/m² (médiane 2023-2025). */
+
+// Prix au m² par état, pour une maison type du secteur (coefficient commune = 1).
+// DVF ne connaît pas l'état : chaque état est associé à une tranche de prix
+// (10 % les moins chères, quart inférieur, médiane, quart supérieur),
+// puis recalé pour que l'état « bon » tombe sur le prix médian réel (test sur 865 ventes).
 const PRIX_M2_PAR_ETAT = {
-  "À rénover entièrement": 600,
-  "Travaux à prévoir": 850,
-  "Bon état général": 1150,
-  "Très bon état / récent": 1400
+  "À rénover entièrement": 525,
+  "Travaux à prévoir": 820,
+  "Bon état général": 1180,
+  "Très bon état / récent": 1540
 };
-const PRIX_M2_DEFAUT = 1100;
-const COMMUNES_VALORISEES = ["Lusignan", "Rouillé"];
-const COEF_COMMUNE_VALORISEE = 1.05;
+const PRIX_M2_DEFAUT = 1180;
+
+// Écart de prix au m² de chaque commune par rapport au secteur (médianes 2023-2025).
+// Curzay-sur-Vonne et Cloué : peu de ventes, coefficient rapproché de 1 par prudence.
+const COEF_COMMUNE = {
+  "Coulombiers": 1.50,
+  "Celle-Lévescault": 1.30,
+  "Cloué": 1.15,
+  "Benassay": 1.14,          // commune Boivre-la-Vallée dans DVF
+  "Lusignan": 1.12,
+  "Jazeneuil": 1.09,
+  "Couhé": 0.99,             // commune Valence-en-Poitou dans DVF
+  "Rouillé": 0.98,
+  "Chaunay": 0.90,
+  "Saint-Sauvant": 0.89,
+  "Sanxay": 0.85,
+  "Pamproux": 0.85,
+  "Ménigoute": 0.85,
+  "Curzay-sur-Vonne": 0.85,
+  "Savigné": 0.80
+};
+function coefCommune(commune) { return COEF_COMMUNE[commune] || 1; }
+
+// Taille : le prix au m² baisse quand la maison grandit (prix ~ surface^0,75 dans DVF).
+const SURFACE_REFERENCE = 92;
+const ELASTICITE_SURFACE = -0.25;
+function coefSurface(surface) {
+  const c = Math.pow(surface / SURFACE_REFERENCE, ELASTICITE_SURFACE);
+  return Math.min(1.10, Math.max(0.75, c));
+}
+
+// Terrain : forte décote pour les petites parcelles (maisons de bourg),
+// quasiment plus d'effet au-delà de 1 000 m². Vide = petite cour, compté 200 m².
+const TERRAIN_REFERENCE = 1050;
+const TERRAIN_SI_VIDE = 200;
+function coefTerrain(terrain) {
+  const t = Math.max(100, parseInt(terrain, 10) || TERRAIN_SI_VIDE);
+  // Au-delà de 300 m² : effet modéré. En dessous : décote plus marquée (maisons de bourg).
+  const c300 = Math.pow(301 / (1 + TERRAIN_REFERENCE), 0.12);
+  const c = t >= 300
+    ? Math.pow((1 + t) / (1 + TERRAIN_REFERENCE), 0.12)
+    : c300 * Math.pow(t / 300, 0.5);
+  return Math.min(1.03, Math.max(0.6, c));
+}
+
 const MARGE_FOURCHETTE = 0.08; // fourchette = estimation -8% / +8%
 
-// Barème des terrains (euros par m2 de terrain), selon la situation choisie.
-// VALEURS PROVISOIRES, à valider par Julien avec les ventes récentes du secteur.
-const PRIX_M2_TERRAIN = {
-  "Terrain constructible et viabilisé": 35,
-  "Terrain constructible à viabiliser": 25,
-  "Terrain non constructible": 1,
-  "Terrain, constructibilité à vérifier": 20
+// Terrains à bâtir (DVF) : médiane 42 €/m² jusqu'à 800 m², puis la valeur
+// progresse peu (une parcelle se vend autour de 30 000 € quelle que soit sa taille).
+const TERRAIN_PRIX_M2_JUSQUA_800 = 42;
+const TERRAIN_PRIX_M2_AU_DELA = 8;
+const COEF_SITUATION_TERRAIN = {
+  "Terrain constructible et viabilisé": 1,
+  // Pas distingué dans DVF : décote estimée pour le coût des raccordements, à valider
+  "Terrain constructible à viabiliser": 0.75,
+  "Terrain, constructibilité à vérifier": 0.65
 };
+// Terres, prés et bois non constructibles : médiane 0,50 €/m² dans DVF
+const PRIX_M2_NON_CONSTRUCTIBLE = 0.5;
 const MARGE_FOURCHETTE_TERRAIN = 0.15; // fourchette plus large pour un terrain
 const NON_APPLICABLE = "Non applicable (terrain)";
 
@@ -213,9 +266,16 @@ function collectData() {
 
 function calculerEstimationTerrain(data) {
   const surface = parseInt(data.terrain, 10) || 1000;
-  let prixM2 = PRIX_M2_TERRAIN[data.etat] || PRIX_M2_TERRAIN["Terrain, constructibilité à vérifier"];
-  if (COMMUNES_VALORISEES.includes(data.commune)) prixM2 *= COEF_COMMUNE_VALORISEE;
-  const base = surface * prixM2;
+  let base;
+  if (data.etat === "Terrain non constructible") {
+    base = surface * PRIX_M2_NON_CONSTRUCTIBLE;
+  } else {
+    const valeurViabilise = Math.min(surface, 800) * TERRAIN_PRIX_M2_JUSQUA_800
+      + Math.max(0, surface - 800) * TERRAIN_PRIX_M2_AU_DELA;
+    const coefSituation = COEF_SITUATION_TERRAIN[data.etat] || COEF_SITUATION_TERRAIN["Terrain, constructibilité à vérifier"];
+    base = valeurViabilise * coefSituation * coefCommune(data.commune);
+  }
+  const prixM2 = base / surface;
 
   const atouts = ["Terrain situé dans le Pays Mélusin"];
   const vigilances = [];
@@ -232,9 +292,10 @@ function calculerEstimationTerrain(data) {
   // Arrondi à la centaine pour les petits montants (terrain non constructible)
   const arrondi = base < 20000 ? 100 : 1000;
   return {
-    prix_min: Math.round(base * (1 - MARGE_FOURCHETTE_TERRAIN) / arrondi) * arrondi,
-    prix_max: Math.round(base * (1 + MARGE_FOURCHETTE_TERRAIN) / arrondi) * arrondi,
-    prix_m2: Math.round(prixM2),
+    prix_min: Math.max(arrondi, Math.round(base * (1 - MARGE_FOURCHETTE_TERRAIN) / arrondi) * arrondi),
+    prix_max: Math.max(arrondi, Math.round(base * (1 + MARGE_FOURCHETTE_TERRAIN) / arrondi) * arrondi),
+    // Moins de 10 €/m² (non constructible) : une décimale, sinon arrondi à l'euro
+    prix_m2: prixM2 < 10 ? Math.round(prixM2 * 10) / 10 : Math.round(prixM2),
     analyse: `Votre terrain de ${surface} m² à ${data.commune} a été estimé selon sa situation : "${data.etat}". Pour un terrain, la constructibilité, la viabilisation et l'accès pèsent plus que tout le reste. Un avis de valeur sur place par Julien permettra de l'affiner avec les ventes récentes du secteur.`,
     atouts: atouts.slice(0, 3),
     vigilances: vigilances.slice(0, 2)
@@ -244,8 +305,11 @@ function calculerEstimationTerrain(data) {
 function calculerEstimation(data) {
   if (data.type === "Terrain") return calculerEstimationTerrain(data);
   const surface = parseInt(data.surface, 10) || 100;
-  let prixM2 = PRIX_M2_PAR_ETAT[data.etat] || PRIX_M2_DEFAUT;
-  if (COMMUNES_VALORISEES.includes(data.commune)) prixM2 *= COEF_COMMUNE_VALORISEE;
+  const terrainSaisi = parseInt(data.terrain, 10);
+  const prixM2 = (PRIX_M2_PAR_ETAT[data.etat] || PRIX_M2_DEFAUT)
+    * coefCommune(data.commune)
+    * coefSurface(surface)
+    * coefTerrain(isNaN(terrainSaisi) ? "" : terrainSaisi);
   const base = surface * prixM2;
 
   const atouts = ["Bien localisé dans le Pays Mélusin"];
@@ -427,7 +491,8 @@ function showResults(data, est) {
 
   const fmt = n => new Intl.NumberFormat("fr-FR").format(n) + " €";
   $("price-display").textContent = fmt(est.prix_min) + " à " + fmt(est.prix_max);
-  $("price-sub").textContent = `Soit environ ${est.prix_m2} €/m² · ${data.type} à ${data.commune}`;
+  const prixM2Affiche = new Intl.NumberFormat("fr-FR").format(est.prix_m2);
+  $("price-sub").textContent = `Soit environ ${prixM2Affiche} €/m² · ${data.type} à ${data.commune}`;
 
   // Construction par le DOM et textContent : aucune injection HTML possible
   const factors = $("result-factors");
@@ -435,7 +500,7 @@ function showResults(data, est) {
   const terrain = data.type === "Terrain";
   [
     terrain ? ["📐", `${data.terrain} m²`, "Surface du terrain"] : ["📐", `${data.surface} m²`, "Surface"],
-    ["🏷️", `${est.prix_m2} €/m²`, "Prix estimé"],
+    ["🏷️", `${prixM2Affiche} €/m²`, "Prix estimé"],
     ["📍", data.commune, "Commune"]
   ].forEach(([icone, valeur, libelle]) => {
     const bloc = document.createElement("div");
