@@ -24,13 +24,14 @@ Aucune dépendance, aucun build. Un simple serveur statique suffit (`python3 -m 
 
 ## Configuration
 
-- Webhook Make : constante `MAKE_WEBHOOK_URL` en haut de `script.js`. Scénario Make « BSK Estimateur en ligne => Mail + Brevo » (équipe My Team) : filtre anti-robot (champ `botcheck` vide), mail Outlook à j.sabatier@bskimmobilier.com, puis un aiguillage en deux branches : mail au prospect avec le lien de l'e-book (si email renseigné, envoyé depuis j.sabatier@bskimmobilier.com) et création ou mise à jour du contact Brevo dans la liste BSK (id 2).
+- Webhook Make : constante `MAKE_WEBHOOK_URL` en haut de `script.js`. Scénario Make « BSK Estimateur en ligne => Mail + Brevo » (équipe My Team) : filtre anti-robot (champ `botcheck` vide), mail Outlook à j.sabatier@bskimmobilier.com, puis un aiguillage en deux branches : mail au prospect avec le lien de l'e-book (si email renseigné, envoyé depuis j.sabatier@bskimmobilier.com) et création ou mise à jour du contact Brevo dans les listes BSK (id 2) et Estimation (id 8).
 - Lien de l'e-book dans le mail prospect : https://juliensabatier.github.io/estimationbsk/ebook/10-conseils-vendre-sa-maison-BSK.pdf. Renommer ou déplacer le PDF casse ce lien : mettre à jour le module « Mail au prospect + e-book » dans Make en même temps.
 - Régénérer le PDF après modification de `ebook.html` : impression Chromium en A4 avec arrière-plans (Playwright `page.pdf({ format: 'A4', printBackground: true, preferCSSPageSize: true })`). Polices utilisées : Inter et Caladea, avec repli sur DejaVu.
 - Envoi vers Make : formulaire encodé en `mode: "no-cors"` pour éviter le pré-vol CORS. La réponse est opaque : seule une panne réseau déclenche le secours Web3Forms. Une erreur côté Make (scénario désactivé, file pleine) ne déclenche pas le secours, elle se voit dans l'historique Make.
 - Attributs Brevo alimentés : FIRSTNAME, LASTNAME, SMS (mobile) ou LANDLINE_NUMBER (fixe), SOURCE (voir « Suivi des canaux » ci-dessous), VILLE_BIEN, TYPE_BIEN, SURFACE, TERRAIN, ANNEE_CONSTRUCTION, ETAT_BIEN, NB_PIECES, NB_CHAMBRES, NB_SDB, CHAUFFAGE, DPE, GARAGE, EXPOSITION, ENVIRONNEMENT, POINTS_FORTS, PROJET_VENTE, ESTIMATION_MIN, ESTIMATION_MAX, DATE_DEMANDE_ESTIMATION. Brevo exige un email ou un mobile : sans les deux, seule la notification mail part (elle le signale).
 - Suivi des canaux : `detecterSource()` dans `script.js` lit d'abord `utm_source` (groupe → GROUPES_FB, facebook/instagram/meta → META, google → GOOGLE, email/brevo/newsletter → EMAIL, reseau/whatsapp/sms → RESEAU, autre valeur → BSK), puis à défaut `fbclid` (META) et `gclid` (GOOGLE). Le module « Nettoyage téléphone / email » de Make convertit ce texte en valeur de la catégorie Brevo SOURCE : 1 BSK, 2 META, 3 RESEAU, 4 MARIAGE.NET (autre scénario), 5 GOOGLE, 6 GROUPES FB, 7 EMAIL. Ajouter un canal = l'ajouter aux trois endroits (script.js, Make, catégorie Brevo). `utm_source` et `utm_campaign` bruts apparaissent dans le mail de notification.
 - Clé Web3Forms (secours) : constante `WEB3FORMS_ACCESS_KEY` en haut de `script.js`. Cette clé est publique par conception, elle est liée à l'adresse mail de travail utilisée à la création du compte Web3Forms (j.sabatier@bskimmobilier.com).
+- Type « Terrain » : `adapterFormulaire()` masque surface habitable, année, état, pièces, chambres, SdB, chauffage, DPE, garage, et affiche « Surface du terrain » (obligatoire) et « Situation du terrain » (constructible et viabilisé, à viabiliser, non constructible, je ne sais pas). La situation est envoyée dans le champ `etat` (attribut Brevo ETAT_BIEN), `surface` part vide, les champs habitables partent en « Non applicable (terrain) ». Calcul : `calculerEstimationTerrain` avec `PRIX_M2_TERRAIN` et `MARGE_FOURCHETTE_TERRAIN`.
 - Barème de prix : constantes `PRIX_M2_PAR_ETAT`, `COMMUNES_VALORISEES`, `COEF_COMMUNE_VALORISEE`, `MARGE_FOURCHETTE` dans `script.js`.
 - Liste des communes : `<select id="commune">` dans `index.html`.
 
@@ -43,7 +44,7 @@ Aucune dépendance, aucun build. Un simple serveur statique suffit (`python3 -m 
 
 ## Points ouverts
 
-- Le barème de prix est une formule simple (surface x prix au m² selon l'état). Il n'est pas calibré sur des données de ventes réelles. Julien doit le valider ou l'ajuster avant diffusion large.
+- Le barème de prix est une formule simple (surface x prix au m² selon l'état). Il n'est pas calibré sur des données de ventes réelles. Julien doit le valider ou l'ajuster avant diffusion large. Le barème terrain (`PRIX_M2_TERRAIN`) est provisoire, à valider aussi.
 - Politique de confidentialité : en ligne. À mettre à jour si un pixel Meta, une mesure d'audience ou un nouveau prestataire est ajouté. Adresse postale du responsable non indiquée (à ajouter si Julien le souhaite).
 - Envoi SMS : non implémenté. Nécessiterait un service payant et un petit serveur intermédiaire.
 - Pixel Meta et suivi de conversion : non installés.
