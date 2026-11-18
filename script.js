@@ -478,6 +478,9 @@ function submitEstimation() {
   // L'envoi part en arrière-plan : l'affichage du résultat n'en dépend pas.
   envoyerDemande(data, est);
 
+  // Conversion Meta « Lead » : ne part que si le visiteur a accepté les cookies (pixel.js)
+  if (typeof window.bskTrackLead === "function") window.bskTrackLead();
+
   setTimeout(() => {
     $("loading").classList.remove("visible");
     showResults(data, est);

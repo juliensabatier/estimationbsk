@@ -9,6 +9,7 @@ Page web statique de génération de leads vendeurs pour Julien Sabatier (consei
 - `script.js` : logique du formulaire, calcul local de l'estimation, envoi vers le webhook Make (Web3Forms en secours)
 - `README.md` : mise en ligne et test
 - `politique-confidentialite.html` : politique de confidentialité RGPD, liée depuis la note de consentement et le pied de page
+- `pixel.js` : bandeau cookies et pixel Meta (id 1665492745251916), chargé seulement après « Accepter » ; `window.bskTrackLead()` envoie l'événement Lead à l'envoi d'une estimation ; lien « Cookies » du pied de page pour changer d'avis
 - `ebook/ebook.html` : source de l'e-book « 10 conseils pour vendre votre maison » (8 pages A4)
 - `ebook/10-conseils-vendre-sa-maison-BSK.pdf` : PDF généré depuis `ebook.html`, envoyé par lien aux prospects
 
@@ -45,7 +46,7 @@ Aucune dépendance, aucun build. Un simple serveur statique suffit (`python3 -m 
 ## Points ouverts
 
 - Barème calé sur DVF, mais DVF ne connaît ni l'état, ni le DPE, ni l'assainissement : la correspondance état / prix au m² et la décote « à viabiliser » sont des hypothèses. À affiner avec l'export des ventes de Julien. Pistes : DPE, plain-pied, assainissement, type de bien (longère, appartement).
-- Politique de confidentialité : en ligne. À mettre à jour si un pixel Meta, une mesure d'audience ou un nouveau prestataire est ajouté. Adresse postale du responsable non indiquée (à ajouter si Julien le souhaite).
+- Politique de confidentialité : en ligne, partie 7 à jour pour le pixel Meta. À mettre à jour si une mesure d'audience ou un nouveau prestataire est ajouté. Adresse postale du responsable non indiquée (à ajouter si Julien le souhaite).
 - Envoi SMS : non implémenté. Nécessiterait un service payant et un petit serveur intermédiaire.
-- Pixel Meta et suivi de conversion : non installés.
+- Pixel Meta : installé avec consentement (pixel.js). Événements : PageView, Lead. Accepter et Refuser doivent garder le même aspect (CNIL). Ne jamais charger le pixel avant le clic sur « Accepter ».
 - Logo BSK : l'e-book et le mail prospect utilisent un logo texte (« BSK » dans un carré bleu). À remplacer par le logo officiel si Julien fournit le fichier.
